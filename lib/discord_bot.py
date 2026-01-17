@@ -161,6 +161,7 @@ def run_discord_bot(
 
     intents = discord.Intents.default()
     intents.message_content = True
+    intents.members = True
     bot = commands.Bot(
         command_prefix="!", 
         intents=intents
@@ -231,6 +232,38 @@ def run_discord_bot(
                     category_structure += f">   - Channel: {channel.mention}\n"
                 await ctx.send(category_structure)
                 category_structure = ""
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def clean_channel(ctx: commands.Context):
+        # when invoked as !clean_channel
+        # deletes all bot messages in the current channel
+        channel = ctx.channel
+        channel_name = channel.name
+
+        def is_bot_message(msg):
+            return msg.author == bot.user
+
+        deleted = await channel.purge(limit=None, check=is_bot_message)
+        await ctx.send(f"Deleted {len(deleted)} messages from #{channel_name}.")
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def statistics(ctx: commands.Context):
+        guild = ctx.guild
+        total_categories = len(guild.categories)
+        total_channels = sum(len(category.channels) for category in guild.categories)
+        total_roles = len(guild.roles)
+        total_persons = len(guild.members)
+
+        stats_message = (
+            f"**Server Statistics:**\n"
+            f"> Total Categories: {total_categories}\n"
+            f"> Total Channels: {total_channels}\n"
+            f"> Total Roles: {total_roles}\n"
+            f"> Total People: {total_persons}\n"
+        )
+        await ctx.send(stats_message)
 
     @bot.command()
     @commands.has_permissions(administrator=True)

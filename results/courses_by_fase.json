@@ -1,0 +1,1158 @@
+{
+    "BACHELOR_AUTOTECHNOLOGIE": {
+        "fase_1": {
+            "Aandrijftechnieken": [
+                "| aandrijftechnieken",
+                "[1]"
+            ],
+            "Autolab 1": [
+                "| autolab-1",
+                "[1]"
+            ],
+            "Automotive IT 1": [
+                "| automotive-it-1",
+                "[1]"
+            ],
+            "Elektriciteit - basis": [
+                "| elektriciteit---basis",
+                "[1]"
+            ],
+            "Mechanica": [
+                "| mechanica",
+                "[1]"
+            ],
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Autolab 2": [
+                "| autolab-2",
+                "[1]"
+            ],
+            "Hydraulische en pneumatische voertuigsystemen": [
+                "| hydraulische-en-pneumatische-voertuigsystemen",
+                "[1]"
+            ],
+            "Sterkteleer": [
+                "| sterkteleer",
+                "[1]"
+            ],
+            "Thermodynamische processen in voertuigen": [
+                "| thermodynamische-processen-in-voertuigen",
+                "[1]"
+            ],
+            "Verbrandingsmotoren": [
+                "| verbrandingsmotoren",
+                "[1]"
+            ],
+            "Voertuigelektriciteit 1": [
+                "| voertuigelektriciteit-1",
+                "[1]"
+            ],
+            "Voertuigelektronica 1": [
+                "| voertuigelektronica-1",
+                "[1]"
+            ],
+            "Toegepaste wiskunde": [
+                "| toegepaste-wiskunde",
+                "[1]"
+            ],
+            "International Project": [
+                "| international-project",
+                "[1,2,3]"
+            ],
+            "Ik wil ondernemen! Starten van A tot Z": [
+                "| ik-wil-ondernemen-starten-van-a-tot-z",
+                "[1]"
+            ],
+            "Ik onderneem!": [
+                "| ik-onderneem",
+                "[1]"
+            ]
+        },
+        "fase_2": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Automotive IT 2": [
+                "| automotive-it-2",
+                "[2]"
+            ],
+            "Verbrandingssytemen": [
+                "| verbrandingssytemen",
+                "[2]"
+            ],
+            "Voertuigdynamica": [
+                "| voertuigdynamica",
+                "[2]"
+            ],
+            "Voertuigelektriciteit 2": [
+                "| voertuigelektriciteit-2",
+                "[2]"
+            ],
+            "Voertuigelektronica 2": [
+                "| voertuigelektronica-2",
+                "[2]"
+            ],
+            "Chemische processen in voertuigen": [
+                "| chemische-processen-in-voertuigen",
+                "[2]"
+            ],
+            "Hybride- en elektrische aandrijfsystemen": [
+                "| hybride--en-elektrische-aandrijfsystemen",
+                "[2]"
+            ],
+            "Motormanagement": [
+                "| motormanagement",
+                "[2]"
+            ],
+            "Voertuigmaterialen": [
+                "| voertuigmaterialen",
+                "[2]"
+            ],
+            "Voertuignetwerken": [
+                "| voertuignetwerken",
+                "[2]"
+            ],
+            "Voertuigtechnieken": [
+                "| voertuigtechnieken",
+                "[2]"
+            ],
+            "Automotive sectorexploratie": [
+                "| automotive-sectorexploratie",
+                "[2]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Mototechnieken 1": [
+                "| mototechnieken-1",
+                "[2]"
+            ],
+            "Motorsport engineering 1": [
+                "| motorsport-engineering-1",
+                "[2]"
+            ],
+            "Bedrijfsvoertuigtechnieken 1": [
+                "| bedrijfsvoertuigtechnieken-1",
+                "[2]"
+            ],
+            "International Project": [
+                "| international-project",
+                "[1,2,3]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ]
+        },
+        "fase_3": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ],
+            "Autolab 3": [
+                "| autolab-3",
+                "[3]"
+            ],
+            "Automotive ontwikkeling": [
+                "| automotive-ontwikkeling",
+                "[3]"
+            ],
+            "Automotive simulatie en testing": [
+                "| automotive-simulatie-en-testing",
+                "[3]"
+            ],
+            "Autonome voertuigen en ADAS": [
+                "| autonome-voertuigen-en-adas",
+                "[3]"
+            ],
+            "Energiedragers en accumulatoren": [
+                "| energiedragers-en-accumulatoren",
+                "[3]"
+            ],
+            "Expertise en verzekeringen": [
+                "| expertise-en-verzekeringen",
+                "[3]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Duurzaam ondernemen": [
+                "| duurzaam-ondernemen",
+                "[3]"
+            ],
+            "Mototechnieken 2": [
+                "| mototechnieken-2",
+                "[3]"
+            ],
+            "Bachelorproef": [
+                "| bachelorproef",
+                "[3]"
+            ],
+            "Master Technician Traject": [
+                "| master-technician-traject",
+                "[3]"
+            ],
+            "Motorsport engineering 2": [
+                "| motorsport-engineering-2",
+                "[3]"
+            ],
+            "Bedrijfsvoertuigtechnieken 2": [
+                "| bedrijfsvoertuigtechnieken-2",
+                "[3]"
+            ],
+            "International Project": [
+                "| international-project",
+                "[1,2,3]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ]
+        }
+    },
+    "BACHELOR_ELEKTROMECHANICA": {
+        "fase_1": {
+            "CAD - basis": [
+                "| cad---basis",
+                "[1]"
+            ],
+            "Electronics - basic": [
+                "| electronics---basic",
+                "[1]"
+            ],
+            "Elektrotechniek - basis 1: theorie en oefeningen": [
+                "| elektrotechniek---basis-1-theorie-en-oefeningen",
+                "[1]"
+            ],
+            "Mechanica": [
+                "| mechanica",
+                "[1]"
+            ],
+            "Productietechnieken": [
+                "| productietechnieken",
+                "[1]"
+            ],
+            "Programmeren": [
+                "| programmeren",
+                "[1]"
+            ],
+            "Project Mechatronica": [
+                "| project-mechatronica",
+                "[1]"
+            ],
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Toegepaste wiskunde - basis": [
+                "| toegepaste-wiskunde---basis",
+                "[1]"
+            ],
+            "Elektrotechniek - basis 2: theorie en oefeningen": [
+                "| elektrotechniek---basis-2-theorie-en-oefeningen",
+                "[1]"
+            ],
+            "Fluïdomechanica - basis": [
+                "| fluïdomechanica---basis",
+                "[1]"
+            ],
+            "Geometrische meettechniek": [
+                "| geometrische-meettechniek",
+                "[1]"
+            ],
+            "Logische sturingen": [
+                "| logische-sturingen",
+                "[1]"
+            ],
+            "Mechanisch project": [
+                "| mechanisch-project",
+                "[1]"
+            ],
+            "Sterkteleer": [
+                "| sterkteleer",
+                "[1]"
+            ],
+            "Toegepaste wiskunde - gevorderd": [
+                "| toegepaste-wiskunde---gevorderd",
+                "[1]"
+            ],
+            "Werktuigonderdelen": [
+                "| werktuigonderdelen",
+                "[1]"
+            ],
+            "Domotics": [
+                "| domotics",
+                "[1]"
+            ],
+            "Motion & Sensor Technology": [
+                "| motion-sensor-technology",
+                "[1]"
+            ],
+            "PCL (Programmable Logic Controller)": [
+                "| pcl-programmable-logic-controller",
+                "[1]"
+            ],
+            "Bachelor Project": [
+                "| bachelor-project",
+                "[1]"
+            ],
+            "International Mechatronics Education Project: IMEP": [
+                "| international-mechatronics-education-project-imep",
+                "[1]"
+            ],
+            "Ik wil ondernemen! Starten van A tot Z": [
+                "| ik-wil-ondernemen-starten-van-a-tot-z",
+                "[1]"
+            ],
+            "Ik onderneem!": [
+                "| ik-onderneem",
+                "[1]"
+            ],
+            "Toegepaste wiskunde": [
+                "| toegepaste-wiskunde",
+                "[1]"
+            ],
+            "Digitale controle": [
+                "| digitale-controle",
+                "[1]"
+            ],
+            "Elektrotechniek - basis": [
+                "| elektrotechniek---basis",
+                "[1]"
+            ]
+        },
+        "fase_2": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Elektrotechniek - gevorderd": [
+                "| elektrotechniek---gevorderd",
+                "[2]"
+            ],
+            "Fluïdomechanica - gevorderd": [
+                "| fluïdomechanica---gevorderd",
+                "[2]"
+            ],
+            "Materialenleer": [
+                "| materialenleer",
+                "[2]"
+            ],
+            "Meettechniek": [
+                "| meettechniek",
+                "[2]"
+            ],
+            "PLC - basis": [
+                "| plc---basis",
+                "[2]"
+            ],
+            "Project Ontwerpen": [
+                "| project-ontwerpen",
+                "[2]"
+            ],
+            "Werktuigbouw - basis": [
+                "| werktuigbouw---basis",
+                "[2]"
+            ],
+            "Industriële elektriciteit": [
+                "| industriële-elektriciteit",
+                "[2]"
+            ],
+            "PLC project": [
+                "| plc-project",
+                "[2]"
+            ],
+            "Regeltechniek - basis": [
+                "| regeltechniek---basis",
+                "[2]"
+            ],
+            "Thermodynamica": [
+                "| thermodynamica",
+                "[2]"
+            ],
+            "Werktuigbouw - gevorderd": [
+                "| werktuigbouw---gevorderd",
+                "[2]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Project: automatisering": [
+                "| project-automatisering",
+                "[2]"
+            ],
+            "Project: klimatisering": [
+                "| project-klimatisering",
+                "[2]"
+            ],
+            "Project: onderhoudstechnologie": [
+                "| project-onderhoudstechnologie",
+                "[2]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ]
+        },
+        "fase_3": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Industriële software - niet in 25-26": [
+                "| industriële-software---niet-in-25-26",
+                "[3]"
+            ],
+            "Bachelorproef": [
+                "| bachelorproef",
+                "[3]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Duurzaam ondernemen": [
+                "| duurzaam-ondernemen",
+                "[3]"
+            ],
+            "Functionele veiligheid": [
+                "| functionele-veiligheid",
+                "[3]"
+            ],
+            "Industriële netwerken": [
+                "| industriële-netwerken",
+                "[3]"
+            ],
+            "PLC - gevorderd": [
+                "| plc---gevorderd",
+                "[3]"
+            ],
+            "Motion en sensortechnologie": [
+                "| motion-en-sensortechnologie",
+                "[3]"
+            ],
+            "Procescontrole": [
+                "| procescontrole",
+                "[3]"
+            ],
+            "Regeltechniek - gevorderd": [
+                "| regeltechniek---gevorderd",
+                "[3]"
+            ],
+            "Advanced Motion": [
+                "| advanced-motion",
+                "[3]"
+            ],
+            "ICT for Industry": [
+                "| ict-for-industry",
+                "[3]"
+            ],
+            "Robotica en vision": [
+                "| robotica-en-vision",
+                "[3]"
+            ],
+            "Duurzame energie": [
+                "| duurzame-energie",
+                "[3]"
+            ],
+            "Gebouwenautomatisering": [
+                "| gebouwenautomatisering",
+                "[3]"
+            ],
+            "Installatietechnieken": [
+                "| installatietechnieken",
+                "[3]"
+            ],
+            "Klima inrichtingen": [
+                "| klima-inrichtingen",
+                "[3]"
+            ],
+            "Toegepaste thermodynamica": [
+                "| toegepaste-thermodynamica",
+                "[3]"
+            ],
+            "Elektrisch onderhoud: theorie": [
+                "| elektrisch-onderhoud-theorie",
+                "[3]"
+            ],
+            "Elektrisch onderhoud: toepassingen": [
+                "| elektrisch-onderhoud-toepassingen",
+                "[3]"
+            ],
+            "Factory Automation": [
+                "| factory-automation",
+                "[3]"
+            ],
+            "Mechanisch onderhoud: toepassingen": [
+                "| mechanisch-onderhoud-toepassingen",
+                "[3]"
+            ],
+            "Mechanisch onderhoud: theorie": [
+                "| mechanisch-onderhoud-theorie",
+                "[3]"
+            ],
+            "Thermische systemen": [
+                "| thermische-systemen",
+                "[3]"
+            ],
+            "Verbindingstechnologie": [
+                "| verbindingstechnologie",
+                "[3]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ]
+        }
+    },
+    "BACHELOR_ONTWERP_EN_PRODUCTIETECHNOLOGIE": {
+        "fase_1": {
+            "CAD - basis": [
+                "| cad---basis",
+                "[1]"
+            ],
+            "Computer Aided Manufacturing - basis": [
+                "| computer-aided-manufacturing---basis",
+                "[1]"
+            ],
+            "Industriële productie - basis": [
+                "| industriële-productie---basis",
+                "[1]"
+            ],
+            "Materiaalkunde": [
+                "| materiaalkunde",
+                "[1]"
+            ],
+            "Mechanica": [
+                "| mechanica",
+                "[1]"
+            ],
+            "Productietechnieken": [
+                "| productietechnieken",
+                "[1]"
+            ],
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Schetsen - basis": [
+                "| schetsen---basis",
+                "[1]"
+            ],
+            "Sterkteleer - basis": [
+                "| sterkteleer---basis",
+                "[1]"
+            ],
+            "Toegepaste wiskunde - basis": [
+                "| toegepaste-wiskunde---basis",
+                "[1]"
+            ],
+            "CAD - Part Design": [
+                "| cad---part-design",
+                "[1]"
+            ],
+            "Geometrische meettechniek": [
+                "| geometrische-meettechniek",
+                "[1]"
+            ],
+            "Project - basis": [
+                "| project---basis",
+                "[1]"
+            ],
+            "Sterkteleer - gevorderd": [
+                "| sterkteleer---gevorderd",
+                "[1]"
+            ],
+            "Werktuigonderdelen": [
+                "| werktuigonderdelen",
+                "[1]"
+            ],
+            "Fluïdomechanica - basis": [
+                "| fluïdomechanica---basis",
+                "[1]"
+            ],
+            "Elektrotechniek Industrial Track - basis": [
+                "| elektrotechniek-industrial-track---basis",
+                "[1]"
+            ],
+            "Schetsen - gevorderd": [
+                "| schetsen---gevorderd",
+                "[1]"
+            ],
+            "Design & Prototyping": [
+                "| design-prototyping",
+                "[1]"
+            ],
+            "Elektrotechniek Design Track": [
+                "| elektrotechniek-design-track",
+                "[1]"
+            ],
+            "Ik wil ondernemen! Starten van A tot Z": [
+                "| ik-wil-ondernemen-starten-van-a-tot-z",
+                "[1]"
+            ],
+            "Ik onderneem!": [
+                "| ik-onderneem",
+                "[1]"
+            ],
+            "Toegepaste wiskunde": [
+                "| toegepaste-wiskunde",
+                "[1]"
+            ]
+        },
+        "fase_2": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "CAD - Assembly Design: labo": [
+                "| cad---assembly-design-labo",
+                "[2]"
+            ],
+            "CAD - Assembly Design: theorie": [
+                "| cad---assembly-design-theorie",
+                "[2]"
+            ],
+            "Lastechnologie": [
+                "| lastechnologie",
+                "[2]"
+            ],
+            "Ontwerpmethodiek": [
+                "| ontwerpmethodiek",
+                "[2]"
+            ],
+            "Verbindingstechnologie": [
+                "| verbindingstechnologie",
+                "[2]"
+            ],
+            "Werktuigbouw - basis": [
+                "| werktuigbouw---basis",
+                "[2]"
+            ],
+            "CAD - Functional Design: labo": [
+                "| cad---functional-design-labo",
+                "[2]"
+            ],
+            "CAD - Functional Design: theorie": [
+                "| cad---functional-design-theorie",
+                "[2]"
+            ],
+            "Industriële productie - gevorderd": [
+                "| industriële-productie---gevorderd",
+                "[2]"
+            ],
+            "Manufacturing Technologies - gevorderd": [
+                "| manufacturing-technologies---gevorderd",
+                "[2]"
+            ],
+            "Materiaalkeuze": [
+                "| materiaalkeuze",
+                "[2]"
+            ],
+            "Project - gevorderd": [
+                "| project---gevorderd",
+                "[2]"
+            ],
+            "Toegepaste wiskunde - gevorderd": [
+                "| toegepaste-wiskunde---gevorderd",
+                "[2]"
+            ],
+            "Werktuigbouw - gevorderd": [
+                "| werktuigbouw---gevorderd",
+                "[2]"
+            ],
+            "Computer Aided Manufacturing - gevorderd": [
+                "| computer-aided-manufacturing---gevorderd",
+                "[2]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Elektrotechniek - gevorderd": [
+                "| elektrotechniek---gevorderd",
+                "[2]"
+            ],
+            "Fluïdomechanica - gevorderd": [
+                "| fluïdomechanica---gevorderd",
+                "[2]"
+            ],
+            "CAD - Hybrid Modeling": [
+                "| cad---hybrid-modeling",
+                "[2]"
+            ],
+            "CAD - Reversed Engineering": [
+                "| cad---reversed-engineering",
+                "[2]"
+            ],
+            "Additive Manufacturing Technologies - gevorderd": [
+                "| additive-manufacturing-technologies---gevorderd",
+                "[2]"
+            ],
+            "Design Automation": [
+                "| design-automation",
+                "[2]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ],
+            "Schetsen - expert": [
+                "| schetsen---expert",
+                "[2]"
+            ]
+        },
+        "fase_3": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "3D Rendering and Animation": [
+                "| 3d-rendering-and-animation",
+                "[3]"
+            ],
+            "Automatisering": [
+                "| automatisering",
+                "[3]"
+            ],
+            "CAD - Advanced Features": [
+                "| cad---advanced-features",
+                "[3]"
+            ],
+            "CAD - Eindige Elementen Analyse": [
+                "| cad---eindige-elementen-analyse",
+                "[3]"
+            ],
+            "Manufacturing Technologies - expert": [
+                "| manufacturing-technologies---expert",
+                "[3]"
+            ],
+            "Bachelorproef": [
+                "| bachelorproef",
+                "[3]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Duurzaam ondernemen": [
+                "| duurzaam-ondernemen",
+                "[3]"
+            ],
+            "Mechanisch onderhoud": [
+                "| mechanisch-onderhoud",
+                "[3]"
+            ],
+            "Geometrische meettechniek - expert": [
+                "| geometrische-meettechniek---expert",
+                "[3]"
+            ],
+            "Industriële productie - expert": [
+                "| industriële-productie---expert",
+                "[3]"
+            ],
+            "Computer Aided Manufacturing - expert": [
+                "| computer-aided-manufacturing---expert",
+                "[3]"
+            ],
+            "Additive Manufacturing Technologies - expert": [
+                "| additive-manufacturing-technologies---expert",
+                "[3]"
+            ],
+            "Topologie": [
+                "| topologie",
+                "[3]"
+            ],
+            "Project - expert": [
+                "| project---expert",
+                "[3]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ]
+        }
+    },
+    "BACHELOR_ELEKTRONICA_ICT": {
+        "fase_1": {
+            "C Programming Fundamentals": [
+                "| c-programming-fundamentals",
+                "[1]"
+            ],
+            "OS Fundamentals": [
+                "| os-fundamentals",
+                "[1]"
+            ],
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Network Fundamentals": [
+                "| network-fundamentals",
+                "[1]"
+            ],
+            "Web Engineering": [
+                "| web-engineering",
+                "[1]"
+            ],
+            "Computer Systems - Niet in 25-26": [
+                "| computer-systems---niet-in-25-26",
+                "[1]"
+            ],
+            "Electronics - basic": [
+                "| electronics---basic",
+                "[1]"
+            ],
+            "Embedded Fundamentals": [
+                "| embedded-fundamentals",
+                "[1]"
+            ],
+            "Interface Technology": [
+                "| interface-technology",
+                "[1]"
+            ],
+            "Digital Systems - basic": [
+                "| digital-systems---basic",
+                "[1]"
+            ],
+            "Electricity Fundamentals": [
+                "| electricity-fundamentals",
+                "[1]"
+            ],
+            "Electronics - advanced": [
+                "| electronics---advanced",
+                "[1]"
+            ],
+            "Technology": [
+                "| technology",
+                "[1]"
+            ],
+            "Practice Enterprise Electronics - basic": [
+                "| practice-enterprise-electronics---basic",
+                "[1]"
+            ],
+            "Software Engineering": [
+                "| software-engineering",
+                "[1]"
+            ],
+            "Virtualisation Fundamentals": [
+                "| virtualisation-fundamentals",
+                "[1]"
+            ],
+            "Database fundamentals": [
+                "| database-fundamentals",
+                "[1]"
+            ],
+            "Information Security - Fundamentals": [
+                "| information-security---fundamentals",
+                "[1]"
+            ],
+            "Scripting": [
+                "| scripting",
+                "[1]"
+            ],
+            "Computer System Architecture": [
+                "| computer-system-architecture",
+                "[1]"
+            ],
+            "OS Advanced": [
+                "| os-advanced",
+                "[1]"
+            ],
+            "Smart technology": [
+                "| smart-technology",
+                "[1]"
+            ],
+            "Practice Enterprise ICT - basic": [
+                "| practice-enterprise-ict---basic",
+                "[1]"
+            ],
+            "Internationaal project": [
+                "| internationaal-project",
+                "[1]"
+            ],
+            "Ik wil ondernemen! Starten van A tot Z": [
+                "| ik-wil-ondernemen-starten-van-a-tot-z",
+                "[1]"
+            ],
+            "Ik onderneem!": [
+                "| ik-onderneem",
+                "[1]"
+            ]
+        },
+        "fase_2": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "PHP & MySQL": [
+                "| php-mysql",
+                "[2]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Digital Systems - advanced": [
+                "| digital-systems---advanced",
+                "[2]"
+            ],
+            "Electronics - expert": [
+                "| electronics---expert",
+                "[2]"
+            ],
+            "Embedded Systems": [
+                "| embedded-systems",
+                "[2]"
+            ],
+            "Measurement Technology & Sensors": [
+                "| measurement-technology-sensors",
+                "[2]"
+            ],
+            "Datacommunication": [
+                "| datacommunication",
+                "[2]"
+            ],
+            "Datacommunication: Lab": [
+                "| datacommunication-lab",
+                "[2]"
+            ],
+            "Industrial Communication and Networking": [
+                "| industrial-communication-and-networking",
+                "[2]"
+            ],
+            "Mobile Communication": [
+                "| mobile-communication",
+                "[2]"
+            ],
+            "RF Technology": [
+                "| rf-technology",
+                "[2]"
+            ],
+            "Telecommunication": [
+                "| telecommunication",
+                "[2]"
+            ],
+            "Telecommunication: Lab": [
+                "| telecommunication-lab",
+                "[2]"
+            ],
+            "Practice Enterprise Electronics - advanced": [
+                "| practice-enterprise-electronics---advanced",
+                "[2]"
+            ],
+            "Object Oriented Programming": [
+                "| object-oriented-programming",
+                "[2]"
+            ],
+            "Advanced Object Oriented Programming": [
+                "| advanced-object-oriented-programming",
+                "[2]"
+            ],
+            "Hacking Explained": [
+                "| hacking-explained",
+                "[2]"
+            ],
+            "Network Architecture": [
+                "| network-architecture",
+                "[2]"
+            ],
+            "Python": [
+                "| python",
+                "[2]"
+            ],
+            "Virtualisation": [
+                "| virtualisation",
+                "[2]"
+            ],
+            "Computer Infrastructure": [
+                "| computer-infrastructure",
+                "[2]"
+            ],
+            "High Availability": [
+                "| high-availability",
+                "[2]"
+            ],
+            "ICT Technology for Industry": [
+                "| ict-technology-for-industry",
+                "[2]"
+            ],
+            "Networking Advanced": [
+                "| networking-advanced",
+                "[2]"
+            ],
+            "Practice Enterprise ICT - advanced": [
+                "| practice-enterprise-ict---advanced",
+                "[2]"
+            ],
+            "App Development": [
+                "| app-development",
+                "[2]"
+            ],
+            "GUI Development": [
+                "| gui-development",
+                "[2]"
+            ],
+            "Software engineering": [
+                "| software-engineering",
+                "[2]"
+            ],
+            "Math for Artificial Intelligence": [
+                "| math-for-artificial-intelligence",
+                "[2]"
+            ],
+            "A.I. Fundamentals": [
+                "| ai-fundamentals",
+                "[2]"
+            ],
+            "Python for A.I.": [
+                "| python-for-ai",
+                "[2]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ]
+        },
+        "fase_3": {
+            "Projectmanagement en communicatie": [
+                "| projectmanagement-en-communicatie",
+                "[1,2,3]"
+            ],
+            "Bachelorproef": [
+                "| bachelorproef",
+                "[3]"
+            ],
+            "Peer Assisted Learning (PAL)": [
+                "| peer-assisted-learning-pal",
+                "[2,3]"
+            ],
+            "Duurzaam ondernemen": [
+                "| duurzaam-ondernemen",
+                "[3]"
+            ],
+            "Advanced PCB": [
+                "| advanced-pcb",
+                "[3]"
+            ],
+            "Audio & Video Systems": [
+                "| audio-video-systems",
+                "[3]"
+            ],
+            "Digital Signal Processing": [
+                "| digital-signal-processing",
+                "[3]"
+            ],
+            "Domotics": [
+                "| domotics",
+                "[3]"
+            ],
+            "Embedded Operating Systems": [
+                "| embedded-operating-systems",
+                "[3]"
+            ],
+            "Webservices & Applications": [
+                "| webservices-applications",
+                "[3]"
+            ],
+            "Cloud for SSS": [
+                "| cloud-for-sss",
+                "[3]"
+            ],
+            "Hacking Expert Class": [
+                "| hacking-expert-class",
+                "[3]"
+            ],
+            "Media Networks": [
+                "| media-networks",
+                "[3]"
+            ],
+            "OS & Services Advanced": [
+                "| os-services-advanced",
+                "[3]"
+            ],
+            "App Development Adv.": [
+                "| app-development-adv",
+                "[3]"
+            ],
+            "C#.NET Development": [
+                "| cnet-development",
+                "[3]"
+            ],
+            "Cross Development": [
+                "| cross-development",
+                "[3]"
+            ],
+            "Web Development": [
+                "| web-development",
+                "[3]"
+            ],
+            "A.I. Applications": [
+                "| ai-applications",
+                "[3]"
+            ],
+            "A.I. Frameworks": [
+                "| ai-frameworks",
+                "[3]"
+            ],
+            "Cloud for AI": [
+                "| cloud-for-ai",
+                "[3]"
+            ],
+            "Internationalisation@ThomasMore": [
+                "| internationalisationthomasmore",
+                "[2,3]"
+            ],
+            "International Experience": [
+                "| international-experience",
+                "[2,3]"
+            ],
+            "Cloud for A.I.: Theory/Lab": [
+                "| cloud-for-ai-theorylab",
+                "[3]"
+            ],
+            "Cloud for Security Systems & Services: Theory/Lab": [
+                "| cloud-for-security-systems-services-theorylab",
+                "[3]"
+            ],
+            "Cloud Fundamentals: Theory": [
+                "| cloud-fundamentals-theory",
+                "[3]"
+            ]
+        }
+    }
+}

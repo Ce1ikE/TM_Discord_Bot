@@ -22,7 +22,7 @@ def main():
     args = parser.parse_args()
     
     results_path = Path("results")
-    data_file_path = Path("results/courses_by_fase.json")
+    data_file_path = Path("results/Traject_EM.json")
     
     # If no flags, run both
     run_scrape = args.scrape or (not args.scrape and not args.bot)

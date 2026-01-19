@@ -18,4 +18,12 @@ TM_BACHELOR_DEGREES = {
     "BACHELOR_ELEKTRONICA_ICT": BACHELOR_ELEKTRONICA_ICT,
 }
 
-
+CAMPUS_PAGE_URL_PAGES = [
+    "https://thomasmore.be/nl/campus-de-nayer",
+    "https://thomasmore.be/nl/opleidingen/professionele-bachelor/elektronica-ict/applied-artificial-intelligence/sint-katelijne-waver/basistraject",
+    "https://thomasmore.be/nl/opleidingen/professionele-bachelor/elektronica-ict/application-development/sint-katelijne-waver/basistraject",
+    "https://thomasmore.be/nl/opleidingen/professionele-bachelor/elektronica-ict/security-systems-and-services/sint-katelijne-waver/basistraject",
+    "https://thomasmore.be/nl/opleidingen/professionele-bachelor/ontwerp-en-productietechnologie/design-track/sint-katelijne-waver/basistraject",
+    "https://thomasmore.be/nl/opleidingen/professionele-bachelor/ontwerp-en-productietechnologie/industrial-track/sint-katelijne-waver/basistraject",
+    "https://thomasmore.be/en/educations/degree-students/automotive-technology/automotive-technology/sint-katelijne-waver/full-programme",
+]

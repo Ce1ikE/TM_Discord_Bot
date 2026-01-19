@@ -2,10 +2,32 @@ import re
 import json
 import pprint
 import requests
+import pprint
+import pandas as pd
+import numpy as np
+import trafilatura
+import datetime as dt
 
 from pathlib import Path
 from bs4 import BeautifulSoup
-from .urls import TM_BACHELOR_DEGREES
+
+from .urls import *
+from .embedder import Embedder
+from .chunker import Chunker   
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, dt.datetime):
+            return obj.isoformat()
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        return super().default(obj)
 
 def normalize_channel_name(name: str) -> str:
     # https://support.discord.com/hc/en-us/articles/33694251638295-Discord-Account-Caps-Server-Caps-and-More
@@ -22,16 +44,24 @@ def normalize_channel_name(name: str) -> str:
     # <fase nr emoji> category name
     # and our channels will look like
     # <course name emoji> | course-name
-
+    # to automate this i suggest to do a post processing step
+    # where we add the emojis based on the course name by giving the json file to 
+    # a llm (or ssm if available in the future) and asking it to add relevant emojis based on the course name 
 
     return name[:90]
 
 
-def scrape_web(results_path: Path):
+def scrape_web_bachelor_degrees(results_path: Path) -> Path:
     """
-    Scrape the web pages for the bachelor degrees and extract course information.
-    Save the results in JSON files in the specified results_path.
-    the JSON files will be used later by the Discord bot to create channels , categories and roles.
+        Scrape the web pages for the bachelor degrees and extract course information.
+        Save the results in JSON files in the specified results_path.
+        The JSON files will be used later by the Discord bot to create channels , categories and roles.
+
+        Args:
+            results_path (Path): Path to save the scraped data.
+
+        Returns:
+            the path to the JSON file containing the scraped course data.
     """
     
     global_results = {}
@@ -109,3 +139,94 @@ def scrape_web(results_path: Path):
 
     with open(result_path / "courses_by_fase.json", "w", encoding="utf-8") as f:
         json.dump(preprocessed_results, f, ensure_ascii=False, indent=4)
+
+    return result_path / "courses_by_fase.json"
+
+def scrape_web_campus_pages(result_path: Path) -> Path:
+    """
+        Scrape the campus pages and return the text content as a list of strings.
+
+        Args:
+            result_path (Path): Path to save the scraped data.
+
+        Returns:
+            list of strings: the path to the parquet file containing the scraped info pages.
+
+        Note:
+            The function saves the scraped data in a Parquet file at the specified result_path.
+            A parquet file is chosen for its efficiency in storing tabular data.
+            However, a parquet file cannot be easily viewed in a text editor.
+            To view the data, you can use pandas to read the parquet file and display its contents
+    """
+    embedding_model: Embedder = Embedder(
+        model_name="ibm-granite/granite-embedding-278m-multilingual"
+    )
+    chunker = Chunker(
+        embedding_model=embedding_model,
+        max_chunk_length=500,
+    )
+
+    EDU_KEYWORDS = {
+        "opleiding", "fase", "studiepunten", "duur",
+        "programma", "vakken", "curriculum",
+        "bachelor", "graduaat", "campus",
+        "stage", "afstudeer", "keuzetraject",
+        "credits", "job", "beroep"
+    }
+
+    def is_educational(text: str) -> bool:
+        lowered = text.lower()
+        return any(k in lowered for k in EDU_KEYWORDS)
+    
+    texts = []
+    for url in CAMPUS_PAGE_URL_PAGES:
+        print(f"Scraping campus page: {'/'.join(url.split('/')[:-3])}...")
+        
+        downloaded = trafilatura.fetch_url(url)
+        if not downloaded:
+            print(f"Failed to download page: {url}")
+            continue
+        # we want to extract the main content of the page
+        # and so we use trafilatura to do that
+        # this will gather the minimal main content from the page
+        text = trafilatura.extract(
+            downloaded, 
+            include_comments=False,
+            favor_recall=True, 
+            include_tables=True,
+            deduplicate=True,
+        )
+        if text:
+            texts.append(text)
+        else:
+            print(f"No text extracted from page: {url}")
+
+    chunks, eval = chunker.process(texts)
+
+    # removes chunks that are just whitespace
+    ws_ = re.compile(r"\s+")
+    # removes repeated words
+    rpt_ = re.compile(r"\b(\w+)( \1\b)+")
+    # removes lines that are just dashes or asterisks
+    line_ = re.compile(r"^[-*]{3,}$", re.MULTILINE)
+    filtered = [
+        ws_.sub(" ", line_.sub("", rpt_.sub(r"\1", p))).strip()
+        for p in chunks
+        if is_educational(p)
+    ]
+
+
+    print(f"Extracted {len(filtered)} chunks from campus pages.")
+    with open(result_path / "Info_Pages_Eval.json", "w", encoding="utf-8") as f:
+        json.dump(eval, f, ensure_ascii=False, indent=4, cls=JSONEncoder)
+
+    embeddings = embedding_model.embed(filtered)
+    embeddings_df = pd.DataFrame(
+        columns=["text", "embedding"], 
+        data={"text": filtered, "embedding": embeddings}
+    )
+
+    embeddings_df.info()
+    embeddings_df.to_parquet(result_path / "Info_Pages.parquet", index=False)
+
+    return result_path / "Info_Pages.parquet"

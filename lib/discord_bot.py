@@ -1,17 +1,49 @@
 
-# http://realpython.com/how-to-make-a-discord-bot-python/
-from importlib.resources import path
 import os
 import json
 import discord
 import emoji
 import asyncio
+import time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib
+# REQUIRED for headless environments
+matplotlib.use("Agg")  
 
+from io import BytesIO
+from collections import Counter
+# http://realpython.com/how-to-make-a-discord-bot-python/
 from discord.ext import commands
 from pathlib import Path
-from .urls import TM_BACHELOR_DEGREES
+from threading import Thread
+from transformers import TextIteratorStreamer, StoppingCriteriaList, GenerationConfig
+
+from .llm import LLMGenerator
+from .embedder import Embedder
+from .urls import *
 
 
+
+def retrieve_context(
+    question_emb: list[float], 
+    docs_embd: pd.DataFrame, 
+    cosine_similarity_threshold: float = 0.75,
+    top_k=5
+):
+    retrieved = []
+    for line in docs_embd.itertuples():
+        texts = line.text
+        embeddings = line.embedding
+        # cos_sim(A, B) = dot(A, B) / (||A|| * ||B||)
+        cosine_sim = np.dot(question_emb, embeddings) / (np.linalg.norm(question_emb) * np.linalg.norm(embeddings))
+        if cosine_sim >= cosine_similarity_threshold:
+            print(f"Retrieved chunk with cosine similarity {cosine_sim:.4f}")
+            retrieved.append((cosine_sim, texts))
+    retrieved.sort(reverse=True)
+    print(f"Total retrieved chunks: {len(retrieved)}")
+    return "\n".join(line for _, line in retrieved[:top_k])
 
 
 def fase_to_emoji(fase: str) -> str:
@@ -148,7 +180,8 @@ async def build_structure(
    
 
 def run_discord_bot(
-    data_file_path: Path = Path("results")
+    data_file_path_courses: Path = Path("results/Traject_<..>.json"),
+    data_file_path_info_pages: Path = Path("results/Info_Pages.parquet")
 ):
     """
     Run the Discord bot that creates channels, categories, and roles
@@ -166,6 +199,19 @@ def run_discord_bot(
         command_prefix="!", 
         intents=intents
     )
+
+    llm_generator = LLMGenerator(
+        model_name="Qwen/Qwen2.5-1.5B-Instruct",
+    )
+    stream = TextIteratorStreamer(llm_generator.tokenizer, skip_prompt=True, skip_special_tokens=True)
+
+    embedding_model = Embedder(
+        model_name="ibm-granite/granite-embedding-278m-multilingual"
+    )
+
+    CAMPUS_DOCS = pd.read_parquet(data_file_path_info_pages)
+    print(f"Scraped {len(CAMPUS_DOCS)} documents from campus pages.")
+
 
     @bot.event
     async def on_ready():
@@ -189,10 +235,6 @@ def run_discord_bot(
         print(f"Connected to guild: {guild.name}")
         print(f"Dry-run mode: {DRY_RUN}")
 
-    @bot.command()
-    async def test(ctx):
-        await ctx.send("**I'm working!**")
-
     @bot.event
     async def on_message(message):
         if message.author == bot.user:
@@ -202,8 +244,109 @@ def run_discord_bot(
         await bot.process_commands(message) 
 
     @bot.command()
+    async def test(ctx):
+        await ctx.send("**I'm working!**")
+
+    @bot.command()
     async def ping(ctx: commands.Context):
         await ctx.send("Pong!")
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def tm_ai(ctx: commands.Context, *, question: str):
+        
+        if not question:
+            await ctx.send("Please provide a question after the command.")
+            return
+        
+        limit = 200
+        if len(question) > 200:
+            await ctx.send(f"Your question is too long. Please limit it to {limit} characters.")
+            return
+        
+        # run the generation in a separate thread, 
+        # so that we can fetch the generated text in a non-blocking way.
+        retrieved = retrieve_context(
+            question_emb=embedding_model.embed([question])[0],
+            docs_embd=CAMPUS_DOCS,
+            cosine_similarity_threshold=0.75,
+            top_k=2
+        )
+
+        context = f"""
+        Je bent iPAL, een AI-assistent voor Thomas More Campus De Nayer.
+        Gebruik ALLEEN de onderstaande informatie om te antwoorden.
+        Als het antwoord niet aanwezig is, antwoord dan precies: "Ik weet het niet."
+
+        Extra Informatie:
+        {retrieved}
+        
+        
+        Regels:
+        - Beantwoord ALLEEN de vraag van de gebruiker.
+        - Stel GEEN vervolgvragen.
+        - Voeg GEEN meerdere vraag-antwoordparen toe.
+        - Ga NIET verder met het gesprek.
+        - Houd antwoorden feitelijk, kort en specifiek.
+        - Als het antwoord onbekend is of niet in je kennis zit, antwoord dan precies: "Ik weet het niet."
+        - Verzin GEEN feiten.
+        - Vermeld GEEN URL's, tenzij hier expliciet om wordt gevraagd.
+        
+        U vertegenwoordigt Thomas More Campus De Nayer.
+
+        """
+        generation_kwargs = dict(
+            context=context,
+            prompt=question,
+            streamer=stream,
+            # https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig
+            generation_config=GenerationConfig(
+                max_new_tokens=200,
+                temperature=0.3,
+                top_p=0.9,
+                repetition_penalty=1.1,
+            )
+        )
+        thread = Thread(
+            target=llm_generator.generate, 
+            kwargs=generation_kwargs
+        )
+        
+        thread.start()
+        msg = await ctx.send(f"{emoji.emojize(':robot_face:')} Generating...")
+
+        buffer: str = ""
+        last_edit = time.monotonic()
+
+        for token in stream:
+            buffer += token
+            # because Discord has rate limits we only edit the message
+            # once every second to avoid hitting those limits
+            # we also have to "edit" the message instead of sending a new one
+            # to avoid spamming the channel with messages and because Discord has no streaming API
+            if time.monotonic() - last_edit > 1.0:
+                await msg.edit(
+                    content=(
+                        f"{emoji.emojize(':robot_face:')}"
+                        f"**Question**\n"
+                        f"> {question}\n\n"
+                        f"**Answer**\n"
+                        f"{buffer.strip()}"
+                    )
+                )
+                last_edit = time.monotonic()
+
+        thread.join()
+
+        await msg.edit(
+            content=(
+                f"{emoji.emojize(':robot_face:')}"
+                f"**Question**\n"
+                f"> {question}\n\n"
+                f"**Answer**\n"
+                f"{buffer.strip()}"
+            )
+        )
 
     @bot.command()
     @commands.has_permissions(administrator=True)
@@ -262,8 +405,70 @@ def run_discord_bot(
             f"> Total Channels: {total_channels}\n"
             f"> Total Roles: {total_roles}\n"
             f"> Total People: {total_persons}\n"
+            f"> Bot Dry-Run Mode: {'Enabled' if DRY_RUN else 'Disabled'}\n"
+            f"> Current Guild Timezone: {time.tzname[0]}\n"
+            f"> Current Server Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}\n"
+            f"> LLM backend: {llm_generator.model_name}\n"
         )
         await ctx.send(stats_message)
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def joins_over_time(ctx: commands.Context):
+        FONTDICT = {
+            'fontfamily': 'monospace',
+            'fontsize': 12,
+            'fontweight': 'bold'
+        }
+
+        guild = ctx.guild
+
+        join_dates = [
+            member.joined_at.date()
+            for member in guild.members
+            if member.joined_at is not None
+        ]
+
+        if not join_dates:
+            await ctx.send("No join data available.")
+            return
+
+        counts = Counter(join_dates)
+        dates = sorted(counts.keys())
+
+        cumulative = []
+        total = 0
+        for d in dates:
+            total += counts[d]
+            cumulative.append(total)
+
+        plt.figure(figsize=(10, 5))
+        plt.plot(dates, cumulative)
+        plt.xlabel("Date", fontdict=FONTDICT)
+        plt.ylabel("Total members", fontdict=FONTDICT)
+        plt.title("Server member growth over time", fontdict=FONTDICT)
+        plt.tight_layout()
+        plt.grid(
+            visible=True,
+            which='both',
+            axis='both',
+            color='gray',
+            linestyle='--',
+            linewidth=0.5
+        )
+        plt.gca().spines[['right', 'top']].set_visible(False)
+
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        plt.close()
+        buffer.seek(0)
+
+        # send to Discord
+        await ctx.send(
+            content="**Member joins over time**",
+            file=discord.File(fp=buffer, filename="joins_over_time.png")
+        )
+
 
     @bot.command()
     @commands.has_permissions(administrator=True)
@@ -281,7 +486,7 @@ def run_discord_bot(
             await ctx.send(category_structure)
             category_structure = ""
 
-    data = load_results(data_file_path)
+    data = load_results(data_file_path_courses)
     # so once this code is run no channels/categories/roles are created
     # only when the !build command is issued by an administrator in the server
     # if the DRY_RUN env variable is set to 1 no changes are made but actions are printed to the console

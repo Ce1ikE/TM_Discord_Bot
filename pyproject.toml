@@ -1,5 +1,5 @@
 [project]
-name = "test-fetch-tm-courses"
+name = "tm-discord-bot"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -21,4 +21,22 @@ dependencies = [
     "sentence-transformers>=5.2.0",
     "trafilatura>=2.0.0",
     "transformers>=4.57.6",
+    "torch",
 ]
+
+# for torch with cuda 12.8 support we need to add some extra stuff for uv
+# we first need to define a custom index
+# and then we need to tell uv to use that index for the torch package
+[tool.uv.sources]
+torch = [
+  { index = 'torch-cu128' },
+]
+
+[[tool.uv.index]]
+name = "torch-cu128"
+url = "https://download.pytorch.org/whl/cu128/"
+explicit = true
+
+
+[tool.uv.extra-build-dependencies]
+flash-attn = ["torch"]

@@ -1,79 +1,28 @@
 # TM Courses Discord Bot
 
 ## Overview
-
-This project scrapes course information from Thomas More bachelor degree programs and campus information pages, then uses a Discord bot with AI capabilities to automatically organize servers and answer questions about campus life using RAG (Retrieval-Augmented Generation).
-
-## Features
-
-### Web Scraping
-- **Course Data**: Extracts course information from TM bachelor degree pages (Autotechnologie, Elektromechanica, Elektronica-ICT, Ontwerp en Productietechnologie)
-- **Campus Information**: Scrapes TM info pages using trafilatura for clean text extraction
-- **Data Processing**: Saves scraped data as JSON and Parquet files with embeddings for RAG
-
-### Discord Bot Capabilities
-- **Server Structure Management**: Creates organized categories, channels, and roles based on course structure
-  - Categories organized by fase (year) and bachelor degree
-  - Individual channels per course with normalized names
-  - Emoji-based visual hierarchy
-- **AI Question Answering**: RAG-based Q&A system using local LLM
-  - Embeds questions and retrieves relevant context from campus documents
-  - Uses IBM Granite or Qwen models for text generation
-  - Streams responses with Discord rate-limit handling
-- **Administrative Commands**:
-  - `!build` - Build server structure from scraped data (dry-run mode supported)
-  - `!ask <question>` - Ask questions about campus/courses using AI
-  - `!statistics` - Display server statistics and bot configuration
-  - `!list` - List all categories and channels with mentions
-  - `!list_only_pal_channels` - List only PAL-related channels
-  - `!list_only_students_channels` - List student-facing channels
-  - `!clean_channel` - Remove all bot messages from current channel
-  - `!joins_over_time` - Visualize member growth over time
-  - `!joins_by_month` - Visualize member joins by month
-
-### AI/ML Components
-- **Embeddings**: IBM Granite multilingual embedding models (278M/107M) or sentence-transformers
-- **LLM Generation**: Support for IBM Granite, Qwen 2.5, Phi-3.5, TinyLlama models
-- **RAG Pipeline**: Cosine similarity-based retrieval with configurable thresholds
-- **Document Chunking**: Hybrid chunking with semantic awareness (via Docling)
+This project scrapes course information from Thomas More bachelor degree programs and campus information pages, 
+then uses a Discord bot with AI capabilities to automatically organize servers and answer questions about campus life 
+using RAG (Retrieval-Augmented Generation).
 
 ## Installation
-
 Install dependencies using [uv](https://github.com/astral-sh/uv):
-
 ```bash
 uv pip install -e .
 ```
 
 ## Usage
-
+```bash
 ### Scrape course data only
-
-```bash
+# Fetches course information from TM bachelor degree pages and saves to `results/courses_by_fase.json`.
 uv run python main.py --scrape-tm-courses
-```
-
-Fetches course information from TM bachelor degree pages and saves to `results/courses_by_fase.json`.
-
 ### Scrape campus info pages only
-
-```bash
+# Scrapes TM campus information pages, chunks text, generates embeddings, and saves to `results/Info_Pages.parquet`.
 uv run python main.py --scrape-tm-info-pages
-```
-
-Scrapes TM campus information pages, chunks text, generates embeddings, and saves to `results/Info_Pages.parquet`.
-
 ### Run Discord bot only
-
-```bash
+# Starts the Discord bot with AI capabilities. Requires `.env` configuration.
 uv run python main.py --bot
-```
-
-Starts the Discord bot with AI capabilities. Requires `.env` configuration.
-
 ### Custom data file paths
-
-```bash
 uv run python main.py --bot --file-path-courses custom_courses.json --file-path-info-pages custom_info.parquet
 ```
 

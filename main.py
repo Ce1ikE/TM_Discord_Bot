@@ -1,6 +1,4 @@
 import argparse
-from lib.scrape_web import scrape_web_bachelor_degrees, scrape_web_campus_pages
-from lib.discord_bot import run_discord_bot
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -28,6 +26,11 @@ def main():
         help="Only run the Discord bot"
     )
     parser.add_argument(
+        "--no-llm",
+        action="store_true",
+        help="Run the bot without the LLM"
+    )
+    parser.add_argument(
         "--file-path-courses",
         action="store",
         help="Path to the courses data file"
@@ -43,6 +46,7 @@ def main():
     run_scrape_tm_courses = args.scrape_tm_courses
     run_scrape_tm_info_pages = args.scrape_tm_info_pages
     run_bot = args.bot
+    no_llm = args.no_llm
     data_file_path_courses: str = args.file_path_courses or "courses_by_fase.json"
     data_file_path_info_pages: str = args.file_path_info_pages or "Info_Pages.parquet"
 
@@ -50,19 +54,23 @@ def main():
     data_file_path_info_pages: Path = results_path / data_file_path_info_pages
 
     if run_scrape_tm_courses:
+        from lib.scrape_web import scrape_web_bachelor_degrees
         print("Running web scraper for TM courses...")
         scrape_web_bachelor_degrees(results_path=results_path)
 
     elif run_scrape_tm_info_pages:
+        from lib.scrape_web import scrape_web_campus_pages
         print("Running web scraper for TM info pages...")
         scrape_web_campus_pages(result_path=results_path)
 
     elif run_bot:
+        from lib.discord_bot import run_discord_bot
         print("Starting Discord bot...")
-        load_dotenv()
+        load_dotenv(".env")
         run_discord_bot(
             data_file_path_courses=data_file_path_courses,
-            data_file_path_info_pages=data_file_path_info_pages
+            data_file_path_info_pages=data_file_path_info_pages,
+            no_llm=no_llm
         )
 
     else:

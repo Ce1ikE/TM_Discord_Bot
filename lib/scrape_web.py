@@ -79,7 +79,7 @@ def scrape_web_bachelor_degrees(results_path: Path) -> Path:
 
         # by taking a look at the HTML structure, we can find the relevant data
         # in divs with class "opo-table-wrapper"
-        # inside these divs, each course is represented by a tr with class "module-row"
+        # inside these divs, each course is represented by a <tr> with class "module-row"
         # a other piece of data is stored in data-fases attribute of the tr
         # the name of the course is in a td with class "module-title" inside an a tag
         # in a css selector way:

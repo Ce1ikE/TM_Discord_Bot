@@ -1,191 +1,36 @@
 
 import os
-import json
 import discord
 import emoji
-import asyncio
 import time
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+import ast
 # REQUIRED for headless environments
 matplotlib.use("Agg")  
 
+from typing import Dict, Any
 from io import BytesIO
 from collections import Counter
-# http://realpython.com/how-to-make-a-discord-bot-python/
-from discord.ext import commands
 from pathlib import Path
 from threading import Thread
-from transformers import TextIteratorStreamer, StoppingCriteriaList, GenerationConfig
+
+# http://realpython.com/how-to-make-a-discord-bot-python/
+from discord.ext import commands, tasks
+from discord.ext.commands.core import Command, CogT
+
 
 from .llm import LLMGenerator
 from .embedder import Embedder
 from .urls import *
-
-class BotUtils:
-    
-    @staticmethod
-    def retrieve_context(
-        question_emb: list[float], 
-        docs_embd: pd.DataFrame, 
-        cosine_similarity_threshold: float = 0.75,
-        top_k=5
-    ):
-        retrieved = []
-        for line in docs_embd.itertuples():
-            texts = line.text
-            embeddings = line.embedding
-            # cos_sim(A, B) = dot(A, B) / (||A|| * ||B||)
-            cosine_sim = np.dot(question_emb, embeddings) / (np.linalg.norm(question_emb) * np.linalg.norm(embeddings))
-            if cosine_sim >= cosine_similarity_threshold:
-                print(f"Retrieved chunk with cosine similarity {cosine_sim:.4f}")
-                retrieved.append((cosine_sim, texts))
-        retrieved.sort(reverse=True)
-        print(f"Total retrieved chunks: {len(retrieved)}")
-        return "\n".join(line for _, line in retrieved[:top_k])
-
-    @staticmethod
-    def fase_to_emoji(fase: str) -> str:
-        """
-        Map fase numbers to specific emojis.
-
-            :param fase: The fase number as a string.
-            :return: Corresponding emoji as a string.
-        """
-        mapping = {
-            "1": emoji.emojize(":one:"),
-            "2": emoji.emojize(":two:"),
-            "3": emoji.emojize(":three:"),
-        }
-        return mapping.get(fase, emoji.emojize(":question:"))
-
-    @staticmethod
-    def bachelor_degree_to_emoji(bachelor_degree: str) -> str:
-        """
-        Map bachelor degree codes to specific emojis.
-
-            :param bachelor_degree: The code of the bachelor degree.
-            :return: Corresponding emoji as a string.
-        """
-        mapping = {
-            "BACHELOR_AUTOTECHNOLOGIE": emoji.emojize(":automobile:"),
-            "BACHELOR_ELEKTROMECHANICA": emoji.emojize(":gear:"),
-            "BACHELOR_ONTWERP_EN_PRODUCTIETECHNOLOGIE": emoji.emojize(":triangular_ruler:"),
-            "BACHELOR_ELEKTRONICA_ICT": emoji.emojize(":computer:"),
-        }
-        return mapping.get(bachelor_degree, emoji.emojize(":question:"))
-
-    @staticmethod
-    def fase_to_year(fase: str) -> str:
-        """
-        Convert fase numbers to academic year strings.
-
-            :param fase: The fase number as a string.
-            :return: Corresponding academic year as a string.
-        """
-        mapping = {
-            "1": "FIRST YEAR",
-            "2": "SECOND YEAR",
-            "3": "THIRD YEAR",
-        }
-        return mapping.get(fase, "Unknown Year")
-
-    @staticmethod
-    def load_results(filename_path: Path) -> dict:
-        """
-        Load the scraped results from a JSON file.
-
-            :param filename_path: Path to the JSON file.
-            :return: Dictionary with the scraped results.
-        """
-        with open(filename_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-
-    @staticmethod
-    async def build_structure(
-        guild: discord.Guild,
-        ctx: commands.Context,
-        data: dict,
-        dry_run: bool = True
-    ):
-        """
-        Build the server structure based on the scraped results.
-        Create categories, channels, and roles as needed.
-
-            :param guild: The Discord guild (server) where the structure will be built.
-        """
-        # a wrapper to avoid destructive operations in dry-run mode
-        async def maybe_create(
-            action: str, 
-            coro,
-            **coro_kwargs
-        ):
-            """
-            Wrapper to conditionally execute a coroutine based on DRY_RUN environment variable.
-            
-                :param action: Description of the action to be performed.
-                :param coro: Coroutine to be executed if not in dry-run mode.
-            """
-            # so depending on the dry-run mode we either execute the action or just print it
-            if dry_run:
-                await ctx.send(f"`[DRY-RUN]` {action}")
-                return
-            else:
-                await ctx.send(f"`[RUNNING]` {action}")
-                return await coro(**coro_kwargs) 
-        
-        # top level loop over each bachelor degree
-        for bachelor_degree, results in data.items():
-            bachelor_degree: str
-            results: dict
-
-            bachelor_degree_emoji: str = BotUtils.bachelor_degree_to_emoji(bachelor_degree)
-            bachelor_degree_display: str = bachelor_degree.replace("BACHELOR_", "").replace("_", " ").title()
-            # once we have processed the name we can go to the next
-            # step which is to loop over each fase of the bachelor degree 
-            for fase, courses in results.items():
-                fase: str
-                courses: dict
-                fase = fase.replace("[", "").replace("]", "").replace("fase_", "")
-                fase_emoji: str = BotUtils.fase_to_emoji(fase)
-                category_name: str = f"{fase_emoji} | {bachelor_degree_emoji} {bachelor_degree_display} - {BotUtils.fase_to_year(fase)}"
-                # creates a category for the fase under the bachelor degree
-                category_name = category_name[:90]
-                category = await maybe_create(
-                    # using backticks code blocks for better formatting in Discord
-                    # nice touch ;)
-                    action=f"Creating category: #{category_name}",
-                    coro=guild.create_category,
-                    name=category_name
-                )
-
-                # once we have a category we can loop over each course
-                for course_title, course_info in courses.items():
-                    course_title: str
-                    course_info: list
-
-                    # create a text channel for the course under the category
-                    channel_name = course_info[0].lower().replace(" ", "-").replace("_", "-")
-                    # limit to 90 characters to avoid Discord limits
-                    channel_name = channel_name[:90]
-                    # slight delay to avoid rate limits
-                    # cause otherwise we might hit a 503 error from Discord
-                    # no big deal of course since we can restart the process
-                    await asyncio.sleep(1)  
-                    channel = await maybe_create(
-                        action=f"Creating channel : #{channel_name} => {category_name}",
-                        coro=guild.create_text_channel,
-                        name=channel_name,
-                        category=category
-                    )
-
-    
+from .bot_utils import BotUtils
 
 def run_discord_bot(
     data_file_path_courses: Path = Path("results/Traject_<..>.json"),
-    data_file_path_info_pages: Path = Path("results/Info_Pages.parquet")
+    data_file_path_info_pages: Path = Path("results/Info_Pages.parquet"),
+    no_llm: bool = False
 ):
     """
     Run the Discord bot that creates channels, categories, and roles
@@ -195,6 +40,9 @@ def run_discord_bot(
     DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
     GUILD_ID = int(os.getenv("GUILD_ID"))
     DRY_RUN = os.getenv("DRY_RUN") == "1"
+    MAX_CONTEXT_TOKENS = int(os.getenv("MAX_CONTEXT_TOKENS", 8192))
+    MAX_NEW_TOKENS = int(os.getenv("MAX_NEW_TOKENS", 512))
+    SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT", "You are a helpful assistant for students of the Thomas More Campus De Nayer. Use the provided context to answer the question. If you don't know the answer, say you don't know. Always use all the relevant information from the context to provide a complete and accurate answer.")
 
     intents = discord.Intents.default()
     intents.message_content = True
@@ -205,21 +53,32 @@ def run_discord_bot(
         intents=intents
     )
 
-    llm_generator = LLMGenerator(
-        model_name="Qwen/Qwen2.5-1.5B-Instruct",
-    )
-    stream = TextIteratorStreamer(llm_generator.tokenizer, skip_prompt=True, skip_special_tokens=True)
+    if not no_llm:
+        print("Running bot with LLM. The tm_ai command will work.")
+        llm_generator = LLMGenerator(
+            model_name="unsloth/gemma-4-E2B-it-GGUF:gemma-4-E2B-it-Q4_0.gguf",
+            max_context_tokens=MAX_CONTEXT_TOKENS,
+            max_new_tokens=MAX_NEW_TOKENS,
+            system_prompt=SYSTEM_PROMPT
+        )
 
-    embedding_model = Embedder(
-        model_name="ibm-granite/granite-embedding-278m-multilingual"
-    )
+        embedding_model = Embedder(
+            model_name="ibm-granite/granite-embedding-278m-multilingual"
+        )
 
-    CAMPUS_DOCS = pd.read_parquet(data_file_path_info_pages)
-    print(f"Scraped {len(CAMPUS_DOCS)} documents from campus pages.")
-
+        CAMPUS_DOCS = pd.read_parquet(data_file_path_info_pages)
+        print(f"Scraped {len(CAMPUS_DOCS)} documents from campus pages.")
+    else:
+        llm_generator = None
+        embedding_model = None
+        CAMPUS_DOCS = None
+        print("Running bot without LLM. The tm_ai command will respond with a service offline message.")
 
     @bot.event
     async def on_ready():
+        """
+        Event handler for when the bot has successfully connected to Discord.
+        """
         print(f"Logged in as {bot.user}")
 
         guild = bot.get_guild(GUILD_ID)
@@ -241,32 +100,78 @@ def run_discord_bot(
         print(f"Dry-run mode: {DRY_RUN}")
 
     @bot.event
-    async def on_message(message):
+    async def on_message(message: discord.Message):
+        """
+        Event handler for incoming messages. 
+        We need to process commands in order for the bot to respond to them.
+        """
         if message.author == bot.user:
             return
         
         print(f"Message received: {message.content}")
         await bot.process_commands(message) 
+        print(f"Finished processing message: {message.content}")
 
     @bot.command()
-    async def test(ctx):
+    async def test(ctx: commands.Context):
+        """
+        Simple command to test if the bot is working.
+        """
         await ctx.send("**I'm working!**")
 
     @bot.command()
     async def ping(ctx: commands.Context):
+        """
+        Simple command to test if the bot is responsive.
+        """
         await ctx.send("Pong!")
 
     @bot.command()
     @commands.has_permissions(administrator=True)
+    async def print_full_commands(ctx: commands.Context):
+        """
+        list all available commands and their descriptions.
+        (ADMIN version)
+        """
+        for cmd in sorted(bot.commands, key=lambda c: c.name):
+            try:
+                if cmd.name == "run_discord_bot":
+                    continue
+                doc = cmd.help or getattr(cmd.callback, "__doc__", None) or "No description"
+                await ctx.send(f"**!{cmd.name}**: {doc}")
+            except Exception:
+                continue
+
+    @bot.command()
+    async def print_commands(ctx: commands.Context):
+        """
+        list all available commands and their descriptions.
+        (USER version)
+        """
+        for cmd in sorted(bot.commands, key=lambda c: c.name):
+            try:
+                if await cmd.can_run(ctx):
+                    doc = cmd.help or getattr(cmd.callback, "__doc__", None) or "No description"
+                    await ctx.send(f"**!{cmd.name}**: {doc}")
+            except Exception:
+                # skip commands that raise permission checks or other errors
+                continue
+    
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
     async def tm_ai(ctx: commands.Context, *, question: str):
+        """
+        Answer questions about the Thomas More Campus De Nayer using the LLM and retrieved context 
+        from the scraped info pages.
+        """
+
+        if no_llm:
+            await ctx.send("Service currently offline. Please try again later.")
+            return
         
         if not question:
             await ctx.send("Please provide a question after the command.")
-            return
-        
-        limit = 200
-        if len(question) > 200:
-            await ctx.send(f"Your question is too long. Please limit it to {limit} characters.")
             return
         
         # run the generation in a separate thread, 
@@ -300,30 +205,13 @@ def run_discord_bot(
         U vertegenwoordigt Thomas More Campus De Nayer.
 
         """
-        generation_kwargs = dict(
-            context=context,
-            prompt=question,
-            streamer=stream,
-            # https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig
-            generation_config=GenerationConfig(
-                max_new_tokens=200,
-                temperature=0.3,
-                top_p=0.9,
-                repetition_penalty=1.1,
-            )
-        )
-        thread = Thread(
-            target=llm_generator.generate, 
-            kwargs=generation_kwargs
-        )
-        
-        thread.start()
+
         msg = await ctx.send(f"{emoji.emojize(':robot_face:')} Generating...")
 
         buffer: str = ""
         last_edit = time.monotonic()
 
-        for token in stream:
+        for token in llm_generator.generate(context=context, prompt=question, stream=True):
             buffer += token
             # because Discord has rate limits we only edit the message
             # once every second to avoid hitting those limits
@@ -341,8 +229,6 @@ def run_discord_bot(
                 )
                 last_edit = time.monotonic()
 
-        thread.join()
-
         await msg.edit(
             content=(
                 f"{emoji.emojize(':robot_face:')}"
@@ -356,6 +242,11 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def list_only_pal_channels(ctx: commands.Context):
+        """
+        List only the channels related to PAL.
+        This can be useful to get an overview of the channels that are relevant
+        for PAL and to check if they are properly organized.
+        """
         guild = ctx.guild
         message = "**Server Structure:**\n"
         category_structure = ""
@@ -370,34 +261,131 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def list_only_students_channels(ctx: commands.Context):
+        """
+        List only the channels related to students. 
+        This can be useful to get an overview of the channels that are relevant 
+        for students and to check if they are properly organized.
+        """
         guild = ctx.guild
-        message = "**Server Structure:**\n"
+        msg = await ctx.send("**Server Structure:**\n")
+        last_edit = time.monotonic()
+
         category_structure = ""
         for category in guild.categories:
             if "YEAR" in category.name or "GENERAL" in category.name:
                 category_structure += f"> **Category:** {category.name}\n"
                 for channel in category.channels:
                     category_structure += f">   - Channel: {channel.mention}\n"
-                await ctx.send(category_structure)
-                category_structure = ""
+                
+                if time.monotonic() - last_edit > 1.0 or len(category_structure) > 1500:
+                    await msg.edit(content=category_structure)
+                    last_edit = time.monotonic()
+
+        await msg.edit(content=category_structure)
+
 
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def clean_channel(ctx: commands.Context):
+        """
+        Clean the current channel by deleting all messages sent by the bot. 
+        This can be useful to remove old bot messages and keep the channel tidy. 
+        Use with caution as this will permanently delete messages.
+        """
         # when invoked as !clean_channel
         # deletes all bot messages in the current channel
         channel = ctx.channel
         channel_name = channel.name
 
-        def is_bot_message(msg):
+        def is_bot_message(msg: discord.Message):
             return msg.author == bot.user
 
-        deleted = await channel.purge(limit=None, check=is_bot_message)
-        await ctx.send(f"Deleted {len(deleted)} messages from #{channel_name}.")
+        if DRY_RUN:
+            # count matching messages without deleting
+            count = 0
+            async for msg in channel.history(limit=None):
+                if is_bot_message(msg):
+                    count += 1
+            await ctx.send(f"`[DRY-RUN]` Would delete {count} messages from #{channel_name}.")
+        else:
+            deleted = await channel.purge(limit=None, check=is_bot_message)
+            await ctx.send(f"Deleted {len(deleted)} messages from #{channel_name}.")
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def clean_user_messages(ctx: commands.Context, user: discord.Member):
+        """
+        Clean messages sent by a specific user in the current channel. 
+        This can be useful to remove old messages from a user and keep the channel tidy. 
+        Use with caution as this will permanently delete messages.
+        """
+        channel = ctx.channel
+        channel_name = channel.name
+
+        def is_user_message(msg: discord.Message):
+            return msg.author == user
+
+        if DRY_RUN:
+            count = 0
+            try:
+                async for msg in channel.history(limit=None):
+                    if is_user_message(msg):
+                        count += 1
+            except discord.Forbidden as e:
+                await ctx.send(f"Missing permissions to read messages in #{channel_name}. Cannot perform dry-run count.")
+                return
+            await ctx.send(f"`[DRY-RUN]` Would delete {count} messages from {user.mention} in #{channel_name}.")
+        else:
+            deleted = await channel.purge(limit=None, check=is_user_message)
+            await ctx.send(f"Deleted {len(deleted)} messages from {user.mention} in #{channel_name}.")        
+
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def clean_all_user_messages(ctx: commands.Context, user: discord.Member):
+        """
+        Clean all messages in all channels sent by a specific user.
+        This can be usefull to remove all messages from a user across the server, 
+        for example in case of a user leaving the school and wanting to remove their data from the server.
+        or when someone spams the server and you want to remove all their messages.
+        """
+        guild = ctx.guild
+        await ctx.send("**Cleaning user messages:**\n")
+
+        if DRY_RUN:
+            for channel in guild.channels:
+                if isinstance(channel, discord.TextChannel):
+                    count = 0
+                    try:
+                        async for msg in channel.history(limit=None):
+                            if msg.author == user:
+                                count += 1
+                    except discord.Forbidden as e:
+                        await ctx.send(f"Missing permissions to read messages in #{channel.name}. Skipping.")
+                        continue
+                    
+                    if count:
+                        await ctx.send(f"`[DRY-RUN]` Would delete {count} messages from {user.mention} in #{channel.name}.")
+        else:
+            for channel in guild.channels:
+                if isinstance(channel, discord.TextChannel):
+                    try:
+                        deleted = await channel.purge(limit=None, check=lambda msg: msg.author == user)
+                    except discord.Forbidden as e:
+                        await ctx.send(f"Missing permissions to read messages in #{channel.name}. Skipping.")
+                        continue
+                    
+                    if deleted:
+                        await ctx.send(f"Deleted {len(deleted)} messages from {user.mention} in #{channel.name}.")
 
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def statistics(ctx: commands.Context):
+        """
+        Show various server statistics and insights. 
+        This command provides an overview of the server's structure, member activity, and other relevant information 
+        that can help administrators understand their community better.
+        """
         guild = ctx.guild
         total_categories = len(guild.categories)
         total_channels = sum(len(category.channels) for category in guild.categories)
@@ -417,23 +405,23 @@ def run_discord_bot(
         server_age = (discord.utils.utcnow() - guild.created_at).days
 
         stats_message = (
-            f"**📊 Server Statistics:**\n"
+            f"**{emoji.emojize(':bar_chart:')} Server Statistics:**\n"
             f"> **Guild:** {guild.name}\n"
             f"> **Created:** {guild.created_at.strftime('%Y-%m-%d')} ({server_age} days ago)\n"
             f"> **Owner:** {guild.owner.mention if guild.owner else 'Unknown'}\n\n"
-            f"**👥 Members:**\n"
+            f"**{emoji.emojize(':busts_in_silhouette:')} Members:**\n"
             f"> Total: {total_members} ({human_count} humans, {bot_count} bots)\n"
             f"> Online: {online_members}\n\n"
-            f"**📁 Channels:**\n"
+            f"**{emoji.emojize(':file_folder:')} Channels:**\n"
             f"> Categories: {total_categories}\n"
             f"> Text Channels: {total_text_channels}\n"
             f"> Voice Channels: {total_voice_channels}\n"
             f"> Total: {total_channels}\n\n"
-            f"**🎭 Roles:** {total_roles}\n"
-            f"**🚀 Boost Level:** {boost_level} ({boost_count} boosts)\n\n"
-            f"**🤖 Bot Info:**\n"
-            f"> Dry-Run Mode: {'✅ Enabled' if DRY_RUN else '❌ Disabled'}\n"
-            f"> LLM Backend: `{llm_generator.model_name}`\n"
+            f"**{emoji.emojize(':performing_arts:')} Roles:** {total_roles}\n"
+            f"**{emoji.emojize(':rocket:')} Boost Level:** {boost_level} ({boost_count} boosts)\n\n"
+            f"**{emoji.emojize(':robot:')} Bot Info:**\n"
+            f"> Dry-Run Mode: {f'{emoji.emojize(":white_check_mark:")} Enabled' if DRY_RUN else f' {emoji.emojize(":x:")} Disabled'}\n"
+            f"> LLM Backend: `{llm_generator.model_name if llm_generator else 'Not available'}`\n"
             f"> Server Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}\n"
         )
         await ctx.send(stats_message)
@@ -441,6 +429,9 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def joins_over_time(ctx: commands.Context):
+        """
+        Show a line chart of member joins over time (by month).
+        """
         FONTDICT = {
             'fontfamily': 'monospace',
             'fontsize': 12,
@@ -498,6 +489,9 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def joins_by_month(ctx: commands.Context):
+        """
+        Show the number of new members by month with a bar chart.
+        """
         FONTDICT = {
             'fontfamily': 'monospace',
             'fontsize': 12,
@@ -551,7 +545,9 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def member_status(ctx: commands.Context):
-        """Show breakdown of member statuses with a pie chart."""
+        """
+        Show breakdown of member statuses with a pie chart.
+        """
         FONTDICT = {
             'fontfamily': 'monospace',
             'fontsize': 12,
@@ -599,7 +595,9 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def role_distribution(ctx: commands.Context):
-        """Show the top 10 most common roles in the server."""
+        """
+        Show the top 10 most common roles in the server.
+        """
         FONTDICT = {
             'fontfamily': 'monospace',
             'fontsize': 12,
@@ -652,7 +650,9 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def activity_heatmap(ctx: commands.Context):
-        """Show when members joined by day of week and hour."""
+        """
+        Show when members joined by day of week and hour.
+        """
         FONTDICT = {
             'fontfamily': 'monospace',
             'fontsize': 10,
@@ -701,7 +701,9 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def channel_stats(ctx: commands.Context):
-        """Show channel statistics breakdown."""
+        """
+        Show channel statistics breakdown.
+        """
         guild = ctx.guild
         
         text_channels = [c for c in guild.channels if isinstance(c, discord.TextChannel)]
@@ -717,7 +719,7 @@ def run_discord_bot(
         sorted_cats = sorted(category_sizes.items(), key=lambda x: x[1], reverse=True)[:10]
         
         stats = (
-            f"**📊 Channel Statistics**\n\n"
+            f"**{emoji.emojize(':file_folder:')} Channel Statistics**\n\n"
             f"**Channel Types:**\n"
             f"> Text Channels: {len(text_channels)}\n"
             f"> Voice Channels: {len(voice_channels)}\n"
@@ -733,7 +735,9 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def boost_stats(ctx: commands.Context):
-        """Show server boost statistics."""
+        """
+        Show server boost statistics.
+        """
         guild = ctx.guild
         
         boost_level = guild.premium_tier
@@ -745,7 +749,7 @@ def run_discord_bot(
         next_threshold = next_level_boosts.get(boost_level)
         
         stats = (
-            f"**🚀 Server Boost Statistics**\n\n"
+            f"**{emoji.emojize(':rocket:')} Server Boost Statistics**\n\n"
             f"> Current Level: **{boost_level}**\n"
             f"> Total Boosts: **{boost_count}**\n"
             f"> Active Boosters: **{len(boosters)}**\n"
@@ -755,22 +759,26 @@ def run_discord_bot(
             remaining = next_threshold - boost_count
             stats += f"> Boosts to Level {boost_level + 1}: **{remaining}**\n"
         else:
-            stats += f"> 🎉 **MAX LEVEL REACHED!**\n"
+            stats += f"> {emoji.emojize(':tada:')} **MAX LEVEL REACHED!**\n"
         
         stats += "\n**Level Benefits:**\n"
         if boost_level >= 1:
-            stats += "> ✅ 128 Kbps audio\n> ✅ Custom server invite background\n> ✅ 50 emoji slots\n"
+            stats += f"> {emoji.emojize(':white_check_mark:')} 128 Kbps audio\n> {emoji.emojize(':white_check_mark:')} Custom server invite background\n> {emoji.emojize(':white_check_mark:')} 50 emoji slots\n"
         if boost_level >= 2:
-            stats += "> ✅ 256 Kbps audio\n> ✅ Server banner\n> ✅ 150 emoji slots\n"
+            stats += f"> {emoji.emojize(':white_check_mark:')} 256 Kbps audio\n> {emoji.emojize(':white_check_mark:')} Server banner\n> {emoji.emojize(':white_check_mark:')} 150 emoji slots\n"
         if boost_level >= 3:
-            stats += "> ✅ 384 Kbps audio\n> ✅ Vanity URL\n> ✅ 250 emoji slots\n"
-        
+            stats += f"> {emoji.emojize(':white_check_mark:')} 384 Kbps audio\n> {emoji.emojize(':white_check_mark:')} Vanity URL\n> {emoji.emojize(':white_check_mark:')} 250 emoji slots\n"
+        if boost_level == 0:
+            stats += f"> {emoji.emojize(':x:')} No boost benefits yet. Boost the server to unlock perks!\n"
+
         await ctx.send(stats)
 
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def demographics(ctx: commands.Context):
-        """Show member demographics (bots vs humans, account ages)."""
+        """
+        Show member demographics (bots vs humans, account ages).
+        """
         guild = ctx.guild
         
         total_members = len(guild.members)
@@ -793,7 +801,7 @@ def run_discord_bot(
         mature_accounts = sum(1 for age in account_ages if age >= 365)  # > 1 year
         
         stats = (
-            f"**👥 Server Demographics**\n\n"
+            f"**{emoji.emojize(':busts_in_silhouette:')} Server Demographics**\n\n"
             f"**Member Types:**\n"
             f"> Humans: {human_count} ({human_count/total_members*100:.1f}%)\n"
             f"> Bots: {bot_count} ({bot_count/total_members*100:.1f}%)\n\n"
@@ -809,10 +817,13 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def list(ctx: commands.Context):
+        """
+        List all categories and channels in the server.
+        """
         # lists all categories and channels in the server recursively and 
         # outputs a formattted message with a link to each channel
         guild = ctx.guild
-        message = "**Server Structure:**\n"
+        await ctx.send("**Server Structure:**\n")
         category_structure = ""
         for category in guild.categories:
             category_structure += f"> **Category:** {category.name}\n"
@@ -822,6 +833,39 @@ def run_discord_bot(
             await ctx.send(category_structure)
             category_structure = ""
 
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def list_roles(ctx: commands.Context):
+        """
+        List all roles in the server.
+        """
+        guild = ctx.guild
+        await ctx.send("**Server Roles:**\n")
+        for role in guild.roles:
+            if role.name == "@everyone":
+                continue
+            await ctx.send(f"> {role.name}\n")
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def list_roles_view(ctx: commands.Context):
+        """
+        List all roles and what channles they can access.
+        """
+        guild = ctx.guild
+        await ctx.send("**Server Roles and Permissions:**\n")
+        
+        for role in guild.roles:
+            if role.name == "@everyone":
+                continue
+            await ctx.send(f"> **{role.name}**: ")
+            
+            for channel in guild.channels:
+                perms = channel.permissions_for(role)
+                if perms.read_messages:
+                    await ctx.send(f">   - Channel: {channel.mention}\n")
+            
+
     # so once this code is run no channels/categories/roles are created
     # only when the !build command is issued by an administrator in the server
     # if the DRY_RUN env variable is set to 1 no changes are made but actions are printed to the console
@@ -829,6 +873,11 @@ def run_discord_bot(
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def build(ctx: commands.Context):
+        """
+        Build the server structure based on the scraped course information. 
+        This command should be used with caution as it can create a lot of channels, categories, and roles. 
+        It's recommended to run this in dry-run mode first to see what changes would be made without actually applying them.
+        """
         await ctx.send("**## Building server structure... this may take a while. ##**")
 
         if DRY_RUN:
